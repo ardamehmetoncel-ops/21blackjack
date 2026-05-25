@@ -8,6 +8,30 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;overflow:hidden;user-select:none}
 
+/* ── ANIMATIONS ── */
+@keyframes flyFromShoe {
+  0%   { transform: translate(var(--fx), var(--fy)) rotate(var(--fr)) scale(0.55); opacity:0; }
+  28%  { opacity:1; }
+  100% { transform: translate(0,0) rotate(0deg) scale(1); opacity:1; }
+}
+.fly-in {
+  animation: flyFromShoe 0.42s cubic-bezier(0.18, 0.82, 0.32, 1) both;
+}
+
+@keyframes flipReveal {
+  0%   { transform: rotateY(90deg) scale(0.85); opacity:0.4; }
+  100% { transform: rotateY(0deg)  scale(1);    opacity:1;   }
+}
+.flip-reveal {
+  animation: flipReveal 0.32s ease-out both;
+}
+
+@keyframes winPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(102,187,106,0); }
+  50%      { box-shadow: 0 0 0 8px rgba(102,187,106,0.35); }
+}
+.win-glow { animation: winPulse 0.7s ease-in-out 2; }
+
 /* ── SETUP ── */
 #setup-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:radial-gradient(ellipse at 50% 40%,#0f3d1f 0%,#06120a 70%)}
 .setup-box{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.09);border-radius:22px;padding:52px 64px;text-align:center;backdrop-filter:blur(8px)}
@@ -30,10 +54,20 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
 #msg{font-size:1.05em;color:#e8dcc8;text-align:center;min-height:1.4em;letter-spacing:.02em}
 #shoe-info{font-size:.8em;color:#5a7a5a;text-align:right;min-width:120px}
 
+/* ── SHOE ELEMENT ── */
+#shoe-el{position:relative;width:62px;height:86px;flex-shrink:0}
+.shoe-c{position:absolute;width:56px;height:80px;border-radius:6px;background:linear-gradient(145deg,#1a237e,#283593);border:1px solid rgba(255,255,255,.15);box-shadow:0 2px 6px rgba(0,0,0,.5)}
+.shoe-c:nth-child(1){top:0;left:0}
+.shoe-c:nth-child(2){top:3px;left:3px}
+.shoe-c:nth-child(3){top:6px;left:6px}
+.shoe-lbl{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:.62em;color:#4a6a4a;letter-spacing:.1em;white-space:nowrap}
+
 /* DEALER */
-#dealer-area{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:112px}
+#dealer-area{flex-shrink:0;display:flex;flex-direction:column;align-items:center;gap:5px;min-height:120px}
 .area-lbl{font-size:.72em;color:rgba(255,255,255,.28);text-transform:uppercase;letter-spacing:.12em}
-.d-cards{display:flex;gap:0;justify-content:center}
+.dealer-row{display:flex;align-items:center;gap:24px;justify-content:center}
+#dealer-cards{display:flex;gap:0}
+#dealer-cards .card:not(:first-child){margin-left:-16px}
 #dealer-score{font-size:.9em;color:#b0a080;min-height:1.2em;text-align:center}
 
 /* BOTS */
@@ -66,14 +100,11 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
 .r-bust{color:#ef5350}
 
 /* CARD */
-.card{width:56px;height:80px;border-radius:6px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);display:flex;flex-direction:column;justify-content:space-between;padding:3px 4px;flex-shrink:0;border:1px solid rgba(0,0,0,.08);animation:pop .25s ease-out}
-@keyframes pop{from{opacity:0;transform:scale(.75) translateY(-10px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.card{width:56px;height:80px;border-radius:6px;background:#fff;box-shadow:0 2px 8px rgba(0,0,0,.55);display:flex;flex-direction:column;justify-content:space-between;padding:3px 4px;flex-shrink:0;border:1px solid rgba(0,0,0,.08);position:relative}
 .cr{color:#c62828}.cb{color:#1a1a2e}
 .cc{font-size:.72em;font-weight:bold;line-height:1.15}
 .cc-br{align-self:flex-end;transform:rotate(180deg)}
 .cs{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);font-size:1.35em;pointer-events:none}
-.card{position:relative}
-/* face-down */
 .card-back{background:linear-gradient(145deg,#1a237e,#283593) !important;border:1px solid rgba(255,255,255,.12)}
 .card-back-inner{width:100%;height:100%;border:2px solid rgba(255,255,255,.14);border-radius:4px;background:repeating-linear-gradient(45deg,transparent,transparent 4px,rgba(255,255,255,.04) 4px,rgba(255,255,255,.04) 8px);display:flex;align-items:center;justify-content:center}
 .cbsym{font-size:1.7em;color:rgba(255,255,255,.55)}
@@ -106,7 +137,6 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
 #round-controls{display:none;justify-content:center}
 .next-btn{background:linear-gradient(135deg,#1a5c2a,#2e8f3a);border:2px solid #66bb6a;color:#fff;padding:13px 50px;border-radius:11px;font-size:1.1em;cursor:pointer;font-family:inherit;transition:all .2s}
 .next-btn:hover{transform:scale(1.04);box-shadow:0 4px 16px rgba(102,187,106,.3)}
-/* gameover */
 #gameover{display:none;position:fixed;inset:0;background:rgba(0,0,0,.78);align-items:center;justify-content:center;z-index:200;flex-direction:column;gap:20px}
 #gameover h2{font-size:2.5em;color:#ef5350}
 #gameover p{color:#c0a060;font-size:1.1em}
@@ -116,7 +146,7 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
 </head>
 <body>
 
-<!-- ── SETUP SCREEN ── -->
+<!-- ── SETUP ── -->
 <div id="setup-screen">
   <div class="setup-box">
     <h1>♠ 21 Blackjack ♦</h1>
@@ -135,7 +165,7 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
   </div>
 </div>
 
-<!-- ── GAME TABLE ── -->
+<!-- ── TABLE ── -->
 <div id="game-table">
   <div id="status-bar">
     <span id="bankroll-display">💰 $1000</span>
@@ -145,7 +175,15 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
 
   <div id="dealer-area">
     <div class="area-lbl">Dealer</div>
-    <div class="d-cards" id="dealer-cards"></div>
+    <div class="dealer-row">
+      <div id="dealer-cards"></div>
+      <div id="shoe-el">
+        <div class="shoe-c"></div>
+        <div class="shoe-c"></div>
+        <div class="shoe-c"></div>
+        <div class="shoe-lbl">SHOE</div>
+      </div>
+    </div>
     <div id="dealer-score"></div>
   </div>
 
@@ -158,11 +196,11 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
 
   <div id="controls">
     <div id="bet-controls">
-      <button class="chip c5"   onclick="addChip(5)">$5</button>
-      <button class="chip c25"  onclick="addChip(25)">$25</button>
-      <button class="chip c50"  onclick="addChip(50)">$50</button>
-      <button class="chip c100" onclick="addChip(100)">$100</button>
-      <button class="chip c500" onclick="addChip(500)">$500</button>
+      <button class="chip c5"   data-v="5"   onclick="addChip(5)">$5</button>
+      <button class="chip c25"  data-v="25"  onclick="addChip(25)">$25</button>
+      <button class="chip c50"  data-v="50"  onclick="addChip(50)">$50</button>
+      <button class="chip c100" data-v="100" onclick="addChip(100)">$100</button>
+      <button class="chip c500" data-v="500" onclick="addChip(500)">$500</button>
       <span id="bet-display">Bet: $0</span>
       <button class="ctl-btn rebet-btn" id="rebet-btn" onclick="rebet()" style="display:none">↩ Rebet</button>
       <button class="ctl-btn" onclick="clearBet()">Clear</button>
@@ -180,7 +218,6 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
   </div>
 </div>
 
-<!-- GAME OVER -->
 <div id="gameover">
   <h2>💸 Broke!</h2>
   <p>You ran out of money.</p>
@@ -189,6 +226,9 @@ body{font-family:'Georgia',serif;background:#06120a;color:#e8dcc8;height:100vh;o
 
 <script>
 'use strict';
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+const DEAL_GAP = 270; // ms between each card during initial deal
 
 // ══════════════════════════════════════════
 //  DECK
@@ -202,14 +242,10 @@ function createShoe() {
     for (const s of SUITS)
       for (const r of RANKS)
         cards.push({ suit: s, rank: r, faceDown: false, uid: `${d}${s}${r}` });
-
-  // Fisher-Yates shuffle
   for (let i = cards.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [cards[i], cards[j]] = [cards[j], cards[i]];
   }
-
-  // Cut card: random position within 4th deck (indices 156–207 of 364 total)
   const cutPos = 156 + Math.floor(Math.random() * 52);
   return { cards, pos: 0, cutPos, needsShuffle: false };
 }
@@ -229,93 +265,65 @@ function numVal(rank) {
   if (['J','Q','K'].includes(rank)) return 10;
   return parseInt(rank, 10);
 }
-
 function handScore(cards) {
   const vis = cards.filter(c => !c.faceDown);
-  let score = 0, aces = 0;
-  for (const c of vis) {
-    if (c.rank === 'A') { aces++; score += 11; }
-    else score += numVal(c.rank);
-  }
-  while (score > 21 && aces-- > 0) score -= 10;
-  return score;
+  let s = 0, a = 0;
+  for (const c of vis) { if (c.rank === 'A') { a++; s += 11; } else s += numVal(c.rank); }
+  while (s > 21 && a-- > 0) s -= 10;
+  return s;
 }
-
 function isSoft(cards) {
   const vis = cards.filter(c => !c.faceDown);
-  let score = 0, aces = 0;
-  for (const c of vis) {
-    if (c.rank === 'A') { aces++; score += 11; }
-    else score += numVal(c.rank);
-  }
-  return aces > 0 && score <= 21;
+  let s = 0, a = 0;
+  for (const c of vis) { if (c.rank === 'A') { a++; s += 11; } else s += numVal(c.rank); }
+  return a > 0 && s <= 21;
 }
-
-function isBlackjack(cards) {
-  return cards.length === 2 && handScore(cards) === 21;
-}
-
-function canSplitCards(cards) {
-  return cards.length === 2 && numVal(cards[0].rank) === numVal(cards[1].rank);
-}
-
-function resolveHand(hand, dealerCards) {
+function isBlackjack(cards) { return cards.length === 2 && handScore(cards) === 21; }
+function canSplitCards(cards) { return cards.length === 2 && numVal(cards[0].rank) === numVal(cards[1].rank); }
+function resolveHand(hand, dc) {
   if (hand.status === 'bust') return 'lose';
-  const ps  = handScore(hand.cards);
-  const ds  = handScore(dealerCards);
+  const ps = handScore(hand.cards), ds = handScore(dc);
   const pBJ = isBlackjack(hand.cards) && !hand.splitFrom;
-  const dBJ = isBlackjack(dealerCards);
+  const dBJ = isBlackjack(dc);
   if (pBJ && dBJ) return 'push';
-  if (pBJ)        return 'blackjack';
-  if (dBJ)        return 'lose';
-  if (ds > 21)    return 'win';
-  if (ps > ds)    return 'win';
-  if (ps < ds)    return 'lose';
+  if (pBJ)  return 'blackjack';
+  if (dBJ)  return 'lose';
+  if (ds > 21) return 'win';
+  if (ps > ds) return 'win';
+  if (ps < ds) return 'lose';
   return 'push';
 }
 
 // ══════════════════════════════════════════
-//  BOT BASIC STRATEGY
+//  BOT STRATEGY
 // ══════════════════════════════════════════
 function botDecide(cards, dealerUp, canDbl, splitCount) {
-  const score = handScore(cards);
-  const dv    = numVal(dealerUp.rank);   // dealer up-card value (A=11)
-  const soft  = isSoft(cards);
-
-  // ── Splits ──
+  const score = handScore(cards), dv = numVal(dealerUp.rank), soft = isSoft(cards);
   if (canSplitCards(cards) && splitCount < 3) {
     const r = cards[0].rank;
-    if (r === 'A' || r === '8')                           return 'split';
-    if (['10','J','Q','K'].includes(r))                   { /* fall through: never split 10s */ }
-    else if (r === '9') { if (dv !== 7 && dv < 10)       return 'split'; }
-    else if (r === '7') { if (dv <= 7)                   return 'split'; }
-    else if (r === '6') { if (dv >= 2 && dv <= 6)        return 'split'; }
-    else if (r === '4') { if (dv >= 5 && dv <= 6)        return 'split'; }
-    else if (r === '3' || r === '2') { if (dv <= 7)      return 'split'; }
-  }
-
-  // ── Soft hands ──
-  if (soft) {
-    if (score >= 19)   return 'stand';
-    if (score === 18) {
-      if (canDbl && dv >= 3 && dv <= 6) return 'double';
-      return (dv >= 9) ? 'hit' : 'stand';
+    if (r === 'A' || r === '8') return 'split';
+    if (!['10','J','Q','K'].includes(r)) {
+      if (r === '9' && dv !== 7 && dv < 10) return 'split';
+      if (r === '7' && dv <= 7) return 'split';
+      if (r === '6' && dv <= 6) return 'split';
+      if (r === '4' && dv >= 5 && dv <= 6) return 'split';
+      if ((r === '3' || r === '2') && dv <= 7) return 'split';
     }
-    if (score === 17)  return (canDbl && dv >= 3 && dv <= 6) ? 'double' : 'hit';
-    if (score >= 15)   return (canDbl && dv >= 4 && dv <= 6) ? 'double' : 'hit';
-    if (score >= 13)   return (canDbl && dv >= 5 && dv <= 6) ? 'double' : 'hit';
-    return 'hit';
   }
-
-  // ── Hard hands ──
-  if (score >= 17)   return 'stand';
-  if (score === 16)  return (dv >= 7) ? 'hit' : 'stand';
-  if (score === 15)  return (dv >= 7) ? 'hit' : 'stand';
-  if (score >= 13)   return (dv <= 6) ? 'stand' : 'hit';
-  if (score === 12)  return (dv >= 4 && dv <= 6) ? 'stand' : 'hit';
-  if (score === 11)  return canDbl ? 'double' : 'hit';
-  if (score === 10)  return (canDbl && dv <= 9) ? 'double' : 'hit';
-  if (score === 9)   return (canDbl && dv >= 3 && dv <= 6) ? 'double' : 'hit';
+  if (soft) {
+    if (score >= 19) return 'stand';
+    if (score === 18) { if (canDbl && dv >= 3 && dv <= 6) return 'double'; return dv >= 9 ? 'hit' : 'stand'; }
+    if (score === 17) return (canDbl && dv >= 3 && dv <= 6) ? 'double' : 'hit';
+    if (score >= 15) return (canDbl && dv >= 4 && dv <= 6) ? 'double' : 'hit';
+    return (canDbl && dv >= 5 && dv <= 6) ? 'double' : 'hit';
+  }
+  if (score >= 17) return 'stand';
+  if (score >= 15) return dv >= 7 ? 'hit' : 'stand';
+  if (score >= 13) return dv <= 6 ? 'stand' : 'hit';
+  if (score === 12) return (dv >= 4 && dv <= 6) ? 'stand' : 'hit';
+  if (score === 11) return canDbl ? 'double' : 'hit';
+  if (score === 10) return (canDbl && dv <= 9) ? 'double' : 'hit';
+  if (score === 9)  return (canDbl && dv >= 3 && dv <= 6) ? 'double' : 'hit';
   return 'hit';
 }
 
@@ -325,94 +333,151 @@ function botDecide(cards, dealerUp, canDbl, splitCount) {
 const BOT_NAMES = ['Alex','Jordan','Sam','Taylor','Morgan'];
 const BOT_BETS  = [25, 50, 25, 100, 50];
 
-let G = null;   // global game state
-let lastBet = 0;
+let G = null, lastBet = 0;
 
 function makeHand(cards, bet, extra = {}) {
-  return { cards, bet, status: 'active', doubled: false,
-           splitFrom: false, splitAces: false, result: null, ...extra };
+  return { cards, bet, status: 'active', doubled: false, splitFrom: false, splitAces: false, result: null, ...extra };
 }
 
 function initGame(botCount) {
   G = {
-    phase: 'betting',
-    shoe: createShoe(),
-    bankroll: 1000,
-    bet: 0,
-    playerHands: [],
-    activeHandIdx: 0,
+    phase: 'betting', shoe: createShoe(), bankroll: 1000, bet: 0,
+    playerHands: [], activeHandIdx: 0,
     bots: Array.from({ length: botCount }, (_, i) => ({
       id: i, name: BOT_NAMES[i], bankroll: 1000,
       hands: [], baseBet: BOT_BETS[i], splitCount: 0,
     })),
-    activeBotIdx: 0,
-    activeBotHandIdx: 0,
-    dealer: { cards: [] },
-    message: 'Place your bet!',
+    activeBotIdx: 0, activeBotHandIdx: 0,
+    dealer: { cards: [] }, message: 'Place your bet!',
   };
 }
 
 // ══════════════════════════════════════════
-//  BETTING PHASE
+//  ANIMATION HELPERS
+// ══════════════════════════════════════════
+function animateCard(el) {
+  const shoe = document.getElementById('shoe-el');
+  if (!shoe || !el) return;
+  const sr = shoe.getBoundingClientRect();
+  const er = el.getBoundingClientRect();
+  const fx = (sr.left + sr.width / 2) - (er.left + er.width / 2);
+  const fy = (sr.top  + sr.height / 2) - (er.top  + er.height / 2);
+  const fr = ((Math.random() - 0.5) * 32).toFixed(1) + 'deg';
+  el.style.setProperty('--fx', fx + 'px');
+  el.style.setProperty('--fy', fy + 'px');
+  el.style.setProperty('--fr', fr);
+  el.classList.remove('fly-in', 'flip-reveal');
+  void el.offsetWidth;
+  el.classList.add('fly-in');
+}
+
+function animateByUID(uid) {
+  if (!uid) return;
+  const el = document.querySelector(`[data-uid="${uid}"]`);
+  if (el) animateCard(el);
+}
+
+function flipByUID(uid) {
+  if (!uid) return;
+  const el = document.querySelector(`[data-uid="${uid}"]`);
+  if (!el) return;
+  el.classList.remove('fly-in', 'flip-reveal');
+  void el.offsetWidth;
+  el.classList.add('flip-reveal');
+}
+
+// ══════════════════════════════════════════
+//  BETTING
 // ══════════════════════════════════════════
 function addChip(amt) {
   if (G.phase !== 'betting') return;
-  if (G.bet + amt > G.bankroll) { G.message = "Not enough chips!"; render(); return; }
-  G.bet += amt;
-  G.message = '';
-  render();
+  if (G.bet + amt > G.bankroll) { G.message = 'Not enough chips!'; render(); return; }
+  G.bet += amt; G.message = ''; render();
 }
-
 function clearBet() {
   if (G.phase !== 'betting') return;
-  G.bet = 0;
-  G.message = 'Place your bet!';
-  render();
+  G.bet = 0; G.message = 'Place your bet!'; render();
 }
-
 function rebet() {
-  if (G.phase !== 'betting' || lastBet === 0) return;
-  const amt = Math.min(lastBet, G.bankroll);
-  G.bet = amt;
-  render();
+  if (G.phase !== 'betting' || !lastBet) return;
+  G.bet = Math.min(lastBet, G.bankroll); render();
 }
 
 // ══════════════════════════════════════════
-//  DEAL
+//  DEAL  (async — cards fly one-by-one)
 // ══════════════════════════════════════════
-function deal() {
+async function deal() {
   if (G.phase !== 'betting') return;
   if (G.bet === 0) { G.message = 'Place a bet first!'; render(); return; }
 
   const shoe = G.shoe;
-  // Round 1: bots, player, dealer (face up)
-  const bc1  = G.bots.map(() => dealOne(shoe));
-  const pc1  = dealOne(shoe);
-  const dc1  = dealOne(shoe);
-  // Round 2: bots, player, dealer (hole card)
-  const bc2  = G.bots.map(() => dealOne(shoe));
-  const pc2  = dealOne(shoe);
-  const dc2  = { ...dealOne(shoe), faceDown: true };
 
-  // Setup bots
-  G.bots.forEach((bot, i) => {
-    bot.hands = [makeHand([bc1[i], bc2[i]], bot.baseBet)];
+  // Initialise empty hands so render() creates the containers
+  G.bots.forEach(bot => {
+    bot.hands = [makeHand([], bot.baseBet)];
     bot.bankroll -= bot.baseBet;
     bot.splitCount = 0;
   });
-
-  const ph = makeHand([pc1, pc2], G.bet);
-  if (isBlackjack(ph.cards)) ph.status = 'blackjack';
-
-  lastBet        = G.bet;
-  G.playerHands  = [ph];
-  G.activeHandIdx = 0;
-  G.dealer       = { cards: [dc1, dc2] };
+  lastBet = G.bet;
+  G.playerHands = [makeHand([], G.bet)];
+  G.dealer       = { cards: [] };
   G.bankroll    -= G.bet;
   G.bet          = 0;
-  G.phase        = 'playerTurn';
-  G.message      = ph.status === 'blackjack' ? '🎉 Blackjack!' : 'Your turn';
+  G.phase        = 'dealing';
+  G.message      = '';
+  render();
 
+  // Grab containers once (render() just created them)
+  const dealerCtr  = document.getElementById('dealer-cards');
+  const playerCtr  = document.querySelector('#player-hands-row .cards-row');
+  const botCtrs    = G.bots.map((_, i) =>
+    document.querySelector(`.bot-seat[data-bot="${i}"] .cards-row`));
+
+  // Helper: place one card into a container with animation
+  const place = async (ctr, card) => {
+    await sleep(DEAL_GAP);
+    if (!ctr) return;
+    const tmp = document.createElement('div');
+    tmp.innerHTML = cardHTML(card);
+    const el = tmp.firstElementChild;
+    ctr.appendChild(el);
+    animateCard(el);
+  };
+
+  // ── Round 1 ──
+  for (let i = 0; i < G.bots.length; i++) {
+    const c = dealOne(shoe);
+    G.bots[i].hands[0].cards.push(c);
+    await place(botCtrs[i], c);
+  }
+  const pc1 = dealOne(shoe);
+  G.playerHands[0].cards.push(pc1);
+  await place(playerCtr, pc1);
+
+  const dc1 = dealOne(shoe);
+  G.dealer.cards.push(dc1);
+  await place(dealerCtr, dc1);
+
+  // ── Round 2 ──
+  for (let i = 0; i < G.bots.length; i++) {
+    const c = dealOne(shoe);
+    G.bots[i].hands[0].cards.push(c);
+    await place(botCtrs[i], c);
+  }
+  const pc2 = dealOne(shoe);
+  G.playerHands[0].cards.push(pc2);
+  await place(playerCtr, pc2);
+
+  const dc2 = { ...dealOne(shoe), faceDown: true };
+  G.dealer.cards.push(dc2);
+  await place(dealerCtr, dc2);
+
+  // ── All cards placed — check blackjack, transition ──
+  const ph = G.playerHands[0];
+  if (isBlackjack(ph.cards)) ph.status = 'blackjack';
+
+  G.phase   = 'playerTurn';
+  G.message = ph.status === 'blackjack' ? '🎉 Blackjack!' : 'Your turn';
   render();
 
   if (ph.status !== 'active') setTimeout(advancePlayer, 1100);
@@ -426,14 +491,15 @@ function playerHit() {
   const hand = G.playerHands[G.activeHandIdx];
   if (!hand || hand.status !== 'active') return;
 
-  hand.cards.push(dealOne(G.shoe));
+  const card = dealOne(G.shoe);
+  hand.cards.push(card);
+
   if (handScore(hand.cards) > 21) {
-    hand.status = 'bust';
-    G.message   = 'Bust!';
-    render();
-    setTimeout(advancePlayer, 700);
+    hand.status = 'bust'; G.message = 'Bust!';
+    render(); animateByUID(card.uid);
+    setTimeout(advancePlayer, 850);
   } else {
-    render();
+    render(); animateByUID(card.uid);
   }
 }
 
@@ -441,9 +507,7 @@ function playerStand() {
   if (G.phase !== 'playerTurn') return;
   const hand = G.playerHands[G.activeHandIdx];
   if (!hand || hand.status !== 'active') return;
-
-  hand.status = 'stand';
-  render();
+  hand.status = 'stand'; render();
   setTimeout(advancePlayer, 350);
 }
 
@@ -451,49 +515,44 @@ function playerDouble() {
   if (G.phase !== 'playerTurn') return;
   const hand = G.playerHands[G.activeHandIdx];
   if (!hand || hand.cards.length !== 2 || hand.status !== 'active') return;
-  if (G.bankroll < hand.bet) { G.message = "Not enough to double!"; render(); return; }
+  if (G.bankroll < hand.bet) { G.message = 'Not enough to double!'; render(); return; }
 
   G.bankroll -= hand.bet;
   hand.bet   *= 2;
   hand.doubled = true;
-  hand.cards.push(dealOne(G.shoe));
+  const card = dealOne(G.shoe);
+  hand.cards.push(card);
   hand.status = handScore(hand.cards) > 21 ? 'bust' : 'stand';
   G.message   = hand.status === 'bust' ? 'Bust!' : '';
-
-  render();
-  setTimeout(advancePlayer, 700);
+  render(); animateByUID(card.uid);
+  setTimeout(advancePlayer, 850);
 }
 
 function playerSplit() {
   if (G.phase !== 'playerTurn') return;
   const hand = G.playerHands[G.activeHandIdx];
-  if (!hand || hand.status !== 'active') return;
-  if (!canSplitCards(hand.cards))       return;
-  if (G.playerHands.length >= 4)        return; // max 4 hands
-  if (G.bankroll < hand.bet)            { G.message = "Not enough to split!"; render(); return; }
+  if (!hand || hand.status !== 'active' || !canSplitCards(hand.cards)) return;
+  if (G.playerHands.length >= 4)   return;
+  if (G.bankroll < hand.bet) { G.message = 'Not enough to split!'; render(); return; }
 
   const splitAces = hand.cards[0].rank === 'A';
   G.bankroll -= hand.bet;
-
-  const c1 = dealOne(G.shoe);
-  const c2 = dealOne(G.shoe);
-
+  const c1 = dealOne(G.shoe), c2 = dealOne(G.shoe);
   const h1 = makeHand([hand.cards[0], c1], hand.bet, { splitFrom: true, splitAces });
   const h2 = makeHand([hand.cards[1], c2], hand.bet, { splitFrom: true, splitAces });
-
   if (splitAces) { h1.status = 'stand'; h2.status = 'stand'; }
-
   G.playerHands.splice(G.activeHandIdx, 1, h1, h2);
-  // activeHandIdx still points to h1
 
   render();
+  // Animate both new cards (c1 is now at activeHandIdx, c2 at +1)
+  animateByUID(c1.uid);
+  setTimeout(() => animateByUID(c2.uid), 160);
+
   if (splitAces) setTimeout(advancePlayer, 900);
 }
 
-// Called after any auto-end of a hand (blackjack, bust, double, split-aces)
 function advancePlayer() {
   let idx = G.activeHandIdx + 1;
-  // Skip non-active hands (already stood / busted / blackjack)
   while (idx < G.playerHands.length && G.playerHands[idx].status !== 'active') idx++;
 
   if (idx < G.playerHands.length) {
@@ -501,20 +560,13 @@ function advancePlayer() {
     G.message = G.playerHands.length > 1 ? `Hand ${idx + 1} of ${G.playerHands.length}` : 'Your turn';
     render();
   } else {
-    endPlayerTurn();
-  }
-}
-
-function endPlayerTurn() {
-  if (G.bots.length > 0) {
-    G.phase          = 'botTurn';
-    G.activeBotIdx   = 0;
-    G.activeBotHandIdx = 0;
-    G.message        = 'Bots playing…';
-    render();
-    setTimeout(runBotStep, 550);
-  } else {
-    startDealerTurn();
+    if (G.bots.length > 0) {
+      G.phase = 'botTurn'; G.activeBotIdx = 0; G.activeBotHandIdx = 0;
+      G.message = 'Bots playing…'; render();
+      setTimeout(runBotStep, 550);
+    } else {
+      startDealerTurn();
+    }
   }
 }
 
@@ -523,81 +575,66 @@ function endPlayerTurn() {
 // ══════════════════════════════════════════
 function runBotStep() {
   if (G.phase !== 'botTurn') return;
-
   const bi = G.activeBotIdx;
   if (bi >= G.bots.length) { startDealerTurn(); return; }
 
-  const bot = G.bots[bi];
-  const hi  = G.activeBotHandIdx;
-  const hand = bot.hands[hi];
+  const bot = G.bots[bi], hi = G.activeBotHandIdx, hand = bot.hands[hi];
 
-  // No hand or hand already done → advance
   if (!hand || hand.status !== 'active') {
-    const nextHi = hi + 1;
-    if (nextHi < bot.hands.length) { G.activeBotHandIdx = nextHi; }
+    const nhi = hi + 1;
+    if (nhi < bot.hands.length) G.activeBotHandIdx = nhi;
     else { G.activeBotIdx = bi + 1; G.activeBotHandIdx = 0; }
-    render();
-    setTimeout(runBotStep, 350);
-    return;
+    render(); setTimeout(runBotStep, 350); return;
   }
 
-  const dealerUp = G.dealer.cards[0];
-  const canDbl   = hand.cards.length === 2; // bots always have enough (unlimited spirit)
-  const decision = botDecide(hand.cards, dealerUp, canDbl, bot.splitCount);
+  const dUp = G.dealer.cards[0];
+  const canDbl = hand.cards.length === 2;
+  const dec = botDecide(hand.cards, dUp, canDbl, bot.splitCount);
 
-  if (decision === 'hit') {
-    hand.cards.push(dealOne(G.shoe));
+  if (dec === 'hit') {
+    const card = dealOne(G.shoe);
+    hand.cards.push(card);
     if (handScore(hand.cards) > 21) hand.status = 'bust';
-    render();
-    setTimeout(runBotStep, 550);
-    return;
+    render(); animateByUID(card.uid);
+    setTimeout(runBotStep, 620); return;
   }
-
-  if (decision === 'stand') {
+  if (dec === 'stand') {
     hand.status = 'stand';
-    const nextHi = hi + 1;
-    if (nextHi < bot.hands.length) { G.activeBotHandIdx = nextHi; }
+    const nhi = hi + 1;
+    if (nhi < bot.hands.length) G.activeBotHandIdx = nhi;
     else { G.activeBotIdx = bi + 1; G.activeBotHandIdx = 0; }
-    render();
-    setTimeout(runBotStep, 450);
-    return;
+    render(); setTimeout(runBotStep, 460); return;
   }
-
-  if (decision === 'double') {
-    bot.bankroll -= hand.bet;
-    hand.bet     *= 2;
-    hand.doubled  = true;
-    hand.cards.push(dealOne(G.shoe));
+  if (dec === 'double') {
+    bot.bankroll -= hand.bet; hand.bet *= 2; hand.doubled = true;
+    const card = dealOne(G.shoe);
+    hand.cards.push(card);
     hand.status = handScore(hand.cards) > 21 ? 'bust' : 'stand';
-    const nextHi = hi + 1;
-    if (nextHi < bot.hands.length) { G.activeBotHandIdx = nextHi; }
+    const nhi = hi + 1;
+    if (nhi < bot.hands.length) G.activeBotHandIdx = nhi;
     else { G.activeBotIdx = bi + 1; G.activeBotHandIdx = 0; }
-    render();
-    setTimeout(runBotStep, 550);
-    return;
+    render(); animateByUID(card.uid);
+    setTimeout(runBotStep, 620); return;
   }
-
-  if (decision === 'split') {
-    if (bot.splitCount >= 3) {
-      // Fallback: hit
-      hand.cards.push(dealOne(G.shoe));
+  if (dec === 'split') {
+    if (bot.splitCount >= 3) { // fallback: hit
+      const card = dealOne(G.shoe);
+      hand.cards.push(card);
       if (handScore(hand.cards) > 21) hand.status = 'bust';
-      render();
-      setTimeout(runBotStep, 550);
-      return;
+      render(); animateByUID(card.uid);
+      setTimeout(runBotStep, 620); return;
     }
     const splitAces = hand.cards[0].rank === 'A';
-    bot.bankroll -= hand.bet;
-    bot.splitCount++;
-    const c1 = dealOne(G.shoe);
-    const c2 = dealOne(G.shoe);
+    bot.bankroll -= hand.bet; bot.splitCount++;
+    const c1 = dealOne(G.shoe), c2 = dealOne(G.shoe);
     const h1 = makeHand([hand.cards[0], c1], hand.bet, { splitFrom: true, splitAces });
     const h2 = makeHand([hand.cards[1], c2], hand.bet, { splitFrom: true, splitAces });
     if (splitAces) { h1.status = 'stand'; h2.status = 'stand'; }
     bot.hands.splice(hi, 1, h1, h2);
     render();
-    setTimeout(runBotStep, 450);
-    return;
+    animateByUID(c1.uid);
+    setTimeout(() => animateByUID(c2.uid), 150);
+    setTimeout(runBotStep, 480); return;
   }
 }
 
@@ -605,21 +642,23 @@ function runBotStep() {
 //  DEALER TURN
 // ══════════════════════════════════════════
 function startDealerTurn() {
-  G.phase   = 'dealerTurn';
-  G.message = 'Dealer playing…';
-  // Reveal hole card
-  G.dealer.cards[1].faceDown = false;
+  G.phase = 'dealerTurn'; G.message = 'Dealer playing…';
+  const holeCard = G.dealer.cards[1];
+  const holeUID  = holeCard.uid;
+  holeCard.faceDown = false;
   render();
-  setTimeout(dealerStep, 750);
+  setTimeout(() => flipByUID(holeUID), 30); // slight delay for render to settle
+  setTimeout(dealerStep, 880);
 }
 
 function dealerStep() {
   const sc = handScore(G.dealer.cards);
   if (sc >= 17) { resolveRound(); return; }
-  G.dealer.cards.push(dealOne(G.shoe));
-  render();
+  const card = dealOne(G.shoe);
+  G.dealer.cards.push(card);
+  render(); animateByUID(card.uid);
   const nsc = handScore(G.dealer.cards);
-  setTimeout(nsc >= 17 || nsc > 21 ? resolveRound : dealerStep, 650);
+  setTimeout(nsc >= 17 || nsc > 21 ? resolveRound : dealerStep, 760);
 }
 
 // ══════════════════════════════════════════
@@ -629,7 +668,6 @@ function resolveRound() {
   G.phase = 'done';
   const dc = G.dealer.cards;
 
-  // Player
   for (const hand of G.playerHands) {
     const r = resolveHand(hand, dc);
     hand.result = r;
@@ -637,8 +675,6 @@ function resolveRound() {
     else if (r === 'win')       G.bankroll += hand.bet * 2;
     else if (r === 'push')      G.bankroll += hand.bet;
   }
-
-  // Bots (no bankroll consequence matters for game logic, just display)
   for (const bot of G.bots) {
     for (const hand of bot.hands) {
       const r = resolveHand(hand, dc);
@@ -649,17 +685,20 @@ function resolveRound() {
     }
   }
 
-  // Message based on player's first hand
-  const mainResult = G.playerHands[0]?.result;
-  const msgs = {
+  const mainR = G.playerHands[0]?.result;
+  G.message = {
     blackjack: '🎉 Blackjack! Pays 3 : 2!',
     win:       '✅ You win!',
     lose:      '❌ Dealer wins.',
     push:      '🤝 Push — bet returned.',
-  };
-  G.message = msgs[mainResult] || '';
+  }[mainR] || '';
 
   render();
+
+  // Win glow on winning hands
+  if (mainR === 'win' || mainR === 'blackjack') {
+    document.querySelectorAll('.ph-wrap').forEach(el => el.classList.add('win-glow'));
+  }
 
   if (G.bankroll <= 0) setTimeout(() => {
     document.getElementById('gameover').style.display = 'flex';
@@ -670,20 +709,12 @@ function resolveRound() {
 //  NEW ROUND
 // ══════════════════════════════════════════
 function newRound() {
-  if (G.shoe.needsShuffle) {
-    G.shoe    = createShoe();
-    G.message = '🔀 Shoe reshuffled!';
-  } else {
-    G.message = 'Place your bet!';
-  }
+  if (G.shoe.needsShuffle) { G.shoe = createShoe(); G.message = '🔀 Shoe reshuffled!'; }
+  else G.message = 'Place your bet!';
   G.bots.forEach(b => { b.hands = []; b.splitCount = 0; });
-  G.playerHands    = [];
-  G.activeHandIdx  = 0;
-  G.activeBotIdx   = 0;
-  G.activeBotHandIdx = 0;
-  G.dealer         = { cards: [] };
-  G.bet            = 0;
-  G.phase          = 'betting';
+  G.playerHands = []; G.activeHandIdx = 0;
+  G.activeBotIdx = 0; G.activeBotHandIdx = 0;
+  G.dealer = { cards: [] }; G.bet = 0; G.phase = 'betting';
   render();
 }
 
@@ -691,133 +722,98 @@ function newRound() {
 //  RENDER
 // ══════════════════════════════════════════
 function cardHTML(card) {
-  if (card.faceDown) {
-    return `<div class="card card-back"><div class="card-back-inner"><span class="cbsym">🂠</span></div></div>`;
-  }
-  const red   = card.suit === '♥' || card.suit === '♦';
-  const cls   = red ? 'cr' : 'cb';
-  const label = `${card.rank}<br><small style="font-size:.85em">${card.suit}</small>`;
-  return `
-    <div class="card ${cls}">
-      <div class="cc">${label}</div>
-      <div class="cs">${card.suit}</div>
-      <div class="cc cc-br">${label}</div>
-    </div>`.trim();
+  const uid = `data-uid="${card.uid}"`;
+  if (card.faceDown) return `<div class="card card-back" ${uid}><div class="card-back-inner"><span class="cbsym">🂠</span></div></div>`;
+  const red = card.suit === '♥' || card.suit === '♦';
+  const cls = red ? 'cr' : 'cb';
+  const lbl = `${card.rank}<br><small style="font-size:.85em">${card.suit}</small>`;
+  return `<div class="card ${cls}" ${uid}><div class="cc">${lbl}</div><div class="cs">${card.suit}</div><div class="cc cc-br">${lbl}</div></div>`;
 }
 
-function handHTML(hand, highlight) {
-  const vis   = hand.cards.filter(c => !c.faceDown);
+function handHTML(hand) {
+  const vis = hand.cards.filter(c => !c.faceDown);
   const score = handScore(vis);
   const bust  = hand.status === 'bust' || score > 21;
-  const bj    = hand.status === 'blackjack' || (isBlackjack(hand.cards) && !hand.splitFrom);
-
-  let scoreChipCls = '';
-  if (bust) scoreChipCls = ' score-bust';
-  else if (bj) scoreChipCls = ' score-bj';
-
-  const resultMap = {
-    blackjack: ['BLACKJACK', 'r-blackjack'],
-    win:       ['WIN',       'r-win'],
-    lose:      ['LOSE',      'r-lose'],
-    push:      ['PUSH',      'r-push'],
-  };
-  if (bust && !hand.result) hand.result_display = 'bust';
-
-  let tagHTML = '';
-  if (hand.result && resultMap[hand.result]) {
-    const [lbl, cls] = resultMap[hand.result];
-    tagHTML = `<span class="result-tag ${cls}">${lbl}</span>`;
+  const bj    = isBlackjack(hand.cards) && !hand.splitFrom;
+  const scCls = bust ? ' score-bust' : bj ? ' score-bj' : '';
+  const rMap  = { blackjack:['BLACKJACK','r-blackjack'], win:['WIN','r-win'], lose:['LOSE','r-lose'], push:['PUSH','r-push'] };
+  let tag = '';
+  if (hand.result && rMap[hand.result]) {
+    const [lbl, cls] = rMap[hand.result];
+    tag = `<span class="result-tag ${cls}">${lbl}</span>`;
   } else if (bust) {
-    tagHTML = `<span class="result-tag r-bust">BUST</span>`;
+    tag = `<span class="result-tag r-bust">BUST</span>`;
   } else if (bj && G.phase !== 'playerTurn') {
-    tagHTML = `<span class="result-tag r-blackjack">BLACKJACK</span>`;
+    tag = `<span class="result-tag r-blackjack">BLACKJACK</span>`;
   }
-
-  const betLabel = `$${hand.bet}${hand.doubled ? ' ✕2' : ''}`;
-
   return `<div class="hand">
     <div class="cards-row">${hand.cards.map(cardHTML).join('')}</div>
-    <div class="score-chip${scoreChipCls}">${vis.length ? score : '?'}</div>
-    <div class="hand-info">${betLabel}</div>
-    ${tagHTML}
-  </div>`;
+    <div class="score-chip${scCls}">${vis.length ? score : '?'}</div>
+    <div class="hand-info">$${hand.bet}${hand.doubled ? ' ✕2' : ''}</div>
+    ${tag}</div>`;
 }
 
 function render() {
-  // ── Bankroll & message ──
   document.getElementById('bankroll-display').textContent = `💰 $${G.bankroll.toLocaleString()}`;
   document.getElementById('msg').textContent = G.message;
+  const left = G.shoe.cards.length - G.shoe.pos;
+  document.getElementById('shoe-info').textContent =
+    `🃏 ${(left/52).toFixed(1)} decks left${G.shoe.needsShuffle ? ' · Reshuffle next hand' : ''}`;
 
-  const cardsLeft  = G.shoe.cards.length - G.shoe.pos;
-  const decksLabel = (cardsLeft / 52).toFixed(1);
-  const shuffleWarn = G.shoe.needsShuffle ? ' · Reshuffle next hand' : '';
-  document.getElementById('shoe-info').textContent = `🃏 ${decksLabel} decks left${shuffleWarn}`;
-
-  // ── Dealer ──
+  // Dealer
   document.getElementById('dealer-cards').innerHTML = G.dealer.cards.map(cardHTML).join('');
-  const dVis = G.dealer.cards.filter(c => !c.faceDown);
-  document.getElementById('dealer-score').textContent =
-    dVis.length ? (G.phase === 'dealerTurn' || G.phase === 'done' ? `Score: ${handScore(G.dealer.cards)}` : `Showing: ${handScore(dVis)}`) : '';
+  const dv = G.dealer.cards.filter(c => !c.faceDown);
+  document.getElementById('dealer-score').textContent = dv.length
+    ? (['dealerTurn','done'].includes(G.phase) ? `Score: ${handScore(G.dealer.cards)}` : `Showing: ${handScore(dv)}`)
+    : '';
 
-  // ── Bots ──
+  // Bots
   document.getElementById('bots-area').innerHTML = G.bots.map((bot, bi) => {
     const active = G.phase === 'botTurn' && G.activeBotIdx === bi;
     const handsHTML = bot.hands.length
-      ? `<div class="bot-hands-row">${bot.hands.map((h, hi) => handHTML(h, active && G.activeBotHandIdx === hi)).join('')}</div>`
-      : '';
-    return `<div class="bot-seat${active ? ' glow' : ''}">
+      ? `<div class="bot-hands-row">${bot.hands.map(h => handHTML(h)).join('')}</div>` : '';
+    return `<div class="bot-seat${active ? ' glow' : ''}" data-bot="${bi}">
       <div class="seat-name">${bot.name}</div>
       <div class="seat-br">$${bot.bankroll.toLocaleString()}</div>
-      ${handsHTML}
-    </div>`;
+      ${handsHTML}</div>`;
   }).join('');
 
-  // ── Player hands ──
-  const phRow = document.getElementById('player-hands-row');
-  phRow.innerHTML = G.playerHands.map((hand, i) => {
+  // Player
+  document.getElementById('player-hands-row').innerHTML = G.playerHands.map((hand, i) => {
     const isActive = G.phase === 'playerTurn' && G.activeHandIdx === i && hand.status === 'active';
-    return `<div class="ph-wrap${isActive ? ' active-hand' : ''}">${handHTML(hand, isActive)}</div>`;
+    return `<div class="ph-wrap${isActive ? ' active-hand' : ''}">${handHTML(hand)}</div>`;
   }).join('');
 
-  // ── Controls visibility ──
-  const betting   = G.phase === 'betting';
+  // Controls visibility
+  const betting    = G.phase === 'betting';
   const playerTurn = G.phase === 'playerTurn';
-  const done      = G.phase === 'done';
-  const auto      = ['botTurn','dealerTurn'].includes(G.phase);
+  const done       = G.phase === 'done';
 
-  document.getElementById('bet-controls').style.display    = betting ? 'flex' : 'none';
-  document.getElementById('action-controls').style.display = playerTurn ? 'flex' : 'none';
-  document.getElementById('round-controls').style.display  = done ? 'flex' : 'none';
+  document.getElementById('bet-controls').style.display    = betting    ? 'flex'  : 'none';
+  document.getElementById('action-controls').style.display = playerTurn ? 'flex'  : 'none';
+  document.getElementById('round-controls').style.display  = done       ? 'flex'  : 'none';
 
   if (betting) {
     document.getElementById('bet-display').textContent = `Bet: $${G.bet}`;
-    const rebetBtn = document.getElementById('rebet-btn');
-    rebetBtn.style.display = lastBet > 0 ? 'inline-block' : 'none';
-    // Disable chips if can't afford
+    document.getElementById('rebet-btn').style.display = lastBet > 0 ? 'inline-block' : 'none';
     document.querySelectorAll('.chip').forEach(btn => {
-      const v = parseInt(btn.dataset?.value || btn.textContent.replace('$',''), 10);
-      btn.disabled = G.bet + v > G.bankroll;
+      btn.disabled = G.bet + parseInt(btn.dataset.v, 10) > G.bankroll;
     });
   }
-
   if (playerTurn) {
     const hand   = G.playerHands[G.activeHandIdx];
     const active = hand && hand.status === 'active';
-    const canDbl = active && hand.cards.length === 2 && G.bankroll >= hand.bet;
-    const canSpl = active && canSplitCards(hand.cards) && G.playerHands.length < 4 && G.bankroll >= hand.bet;
-
     document.getElementById('ab-hit').disabled   = !active;
     document.getElementById('ab-stand').disabled = !active;
-    document.getElementById('ab-dbl').disabled   = !canDbl;
-    document.getElementById('ab-split').disabled = !canSpl;
+    document.getElementById('ab-dbl').disabled   = !(active && hand.cards.length === 2 && G.bankroll >= hand.bet);
+    document.getElementById('ab-split').disabled = !(active && canSplitCards(hand.cards) && G.playerHands.length < 4 && G.bankroll >= hand.bet);
   }
 }
 
 // ══════════════════════════════════════════
-//  SETUP SCREEN LOGIC
+//  SETUP & KEYBOARD
 // ══════════════════════════════════════════
 let selectedBots = 0;
-
 document.querySelectorAll('.bot-btn').forEach(btn => {
   btn.addEventListener('click', () => {
     document.querySelectorAll('.bot-btn').forEach(b => b.classList.remove('sel'));
@@ -825,27 +821,18 @@ document.querySelectorAll('.bot-btn').forEach(btn => {
     selectedBots = parseInt(btn.dataset.n, 10);
   });
 });
-
 document.getElementById('play-btn').addEventListener('click', () => {
   document.getElementById('setup-screen').style.display = 'none';
   document.getElementById('game-table').style.display   = 'flex';
   initGame(selectedBots);
   render();
 });
-
-// Keyboard shortcuts during player turn
 document.addEventListener('keydown', e => {
-  if (G?.phase !== 'playerTurn') return;
+  if (!G || G.phase !== 'playerTurn') return;
   if (e.key === 'h' || e.key === 'H') playerHit();
   if (e.key === 's' || e.key === 'S') playerStand();
   if (e.key === 'd' || e.key === 'D') playerDouble();
   if (e.key === 'p' || e.key === 'P') playerSplit();
-});
-
-// Also chip data-value for disable check
-document.querySelectorAll('.chip').forEach((btn, i) => {
-  const vals = [5, 25, 50, 100, 500];
-  btn.dataset.value = vals[i];
 });
 </script>
 </body>
